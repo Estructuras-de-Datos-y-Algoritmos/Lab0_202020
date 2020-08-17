@@ -31,7 +31,7 @@ import sys
 import csv
 from time import process_time 
 
-def loadCSVFile (file, lst, sep=";"):
+def loadCSVFile (file, file2, lst,lst2, sep=";"):
     """
     Carga un archivo csv a una lista
     Args:
@@ -58,6 +58,23 @@ def loadCSVFile (file, lst, sep=";"):
                 lst.append(row)
     except:
         del lst[:]
+        print("Se presento un error en la carga del archivo")
+    
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+
+    del lst2[:]
+    print("Cargando archivo ....")
+    t1_start = process_time() #tiempo inicial
+    dialect = csv.excel()
+    dialect.delimiter=sep
+    try:
+        with open(file2, encoding="utf-8") as csvfile:
+            spamreader = csv.DictReader(csvfile, dialect=dialect)
+            for row in spamreader: 
+                lst2.append(row)
+    except:
+        del lst2[:]
         print("Se presento un error en la carga del archivo")
     
     t1_stop = process_time() #tiempo final
@@ -117,13 +134,19 @@ def main():
     Return: None 
     """
     lista = [] #instanciar una lista vacia
+    lista2 = [] #instanciar una lista vacia
     while True:
         printMenu() #imprimir el menu de opciones en consola
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                loadCSVFile("Data/test.csv", lista) #llamar funcion cargar datos
-                print("Datos cargados, "+str(len(lista))+" elementos cargados")
+                loadCSVFile("Data/MoviesCastingRaw-small.csv","Data/SmallMoviesDetailsCleaned.csv",lista,lista2) #llamar funcion cargar datos
+                #print("Datos cargados, "+str(len(lista))+" elementos cargados")
+                print(lista[0])
+                print("Datos cargados, "+str(len(lista2))+" elementos cargados")
+                print(lista2[0])
+
+
             elif int(inputs[0])==2: #opcion 2
                 if len(lista)==0: #obtener la longitud de la lista
                     print("La lista esta vacía")    
