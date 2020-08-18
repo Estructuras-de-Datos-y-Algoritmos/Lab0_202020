@@ -63,6 +63,20 @@ def loadCSVFile (file, lst, sep=";"):
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
 
+
+    #EN ESTA FUNCIÓN SE HIZO LA CREACIÓN DE UNA LISTA CON LAS DOS BASES DE DATOS
+
+def get_two_csv(file,file2):
+    list1= []
+    list2= []
+    final= []
+    loadCSVFile(file,list1)
+    loadCSVFile(file2,list2)
+    for i in range(0,len(list1)):
+        tuple_= (list1[i],list2[i])
+        final.append(tuple_)
+    return final
+
 def printMenu():
     """
     Imprime el menu de opciones
@@ -108,29 +122,18 @@ def countElementsByCriteria(criteria, column, lst):
     return 0
 
 
-#funciones adicionales
 
-def get_two_csv(file,file2):
-    list1= []
-    list2= []
-    final= []
-    loadCSVFile(file,list1)
-    loadCSVFile(file2,list2)
-    for i in range(0,len(list1)):
-        tuple_= (list1[i],list2[i])
-        final.append(tuple_)
-    return final
 
-lst= get_two_csv("Data/MoviesCastingRaw-small.csv",'Data/SmallMoviesDetailsCleaned.csv')
+#ESTA ES LA FUNCIÓN PARA LA BÚSQUEDAD DEL DIRECTOR Y DE LAS PELÍCULAS BUENAS
 
-def good_movies(lst,dir):
+def good_movies(lista,busqueda):
     count, sum, di, vot= 0,0,1,0
-    if lst[0][0]['director_name'] :
+    if lista[0][0]['director_name'] :
         di= 0
         vot= 1
-    for i in range(0,len(lst)) :
-        if lst[i][di]['director_name'] == dir:
-            vote= float(lst[i][vot]['vote_average'])
+    for i in range(0,len(lista)) :
+        if lista[i][di]['director_name'] == busqueda:
+            vote= float(lista[i][vot]['vote_average'])
             if vote >= 6:
                 count+=1
                 sum+= vote
@@ -146,14 +149,13 @@ def main():
     Args: None
     Return: None 
     """
-    lista = get_two_csv("Data/MoviesCastingRaw-small.csv",'Data/SmallMoviesDetailsCleaned.csv') #instanciar una lista vacia
+    lista = []
     while True:
         printMenu() #imprimir el menu de opciones en consola
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                loadCSVFile("Data/MoviesCastingRaw-small.csv", lista) #llamar funcion cargar datos
-                get_two_csv("Data/MoviesCastingRaw-small.csv",'Data/SmallMoviesDetailsCleaned.csv')
+                lista=get_two_csv("Data/MoviesCastingRaw-small.csv",'Data/SmallMoviesDetailsCleaned.csv')
 
                 print("Datos cargados, "+str(len(lista))+" elementos cargados")
             elif int(inputs[0])==2: #opcion 2
@@ -162,8 +164,11 @@ def main():
                 else: print("La lista tiene "+str(len(lista))+" elementos")
             elif int(inputs[0])==3: #opcion 3
                 criteria =input('Ingrese el criterio de búsqueda\n')
-                print(good_movies(lst,criteria)) #filtrar una columna por criterio 
-               # print("Coinciden ",counter," elementos con el crtierio: ", criteria  )
+                counter=good_movies(lista,criteria)[0] 
+                promedio=good_movies(lista,criteria)[1]
+                print("En la lista aparecen: ",counter," películas con valoración mayor a 6 del director: ", criteria  )
+                print("El promedio de valoración de las películas buenas del director ",criteria," es: ", promedio  )
+
             elif int(inputs[0])==4: #opcion 4
                 criteria =input('Ingrese el criterio de búsqueda\n')
                 counter=countElementsByCriteria(criteria,0,lista)
